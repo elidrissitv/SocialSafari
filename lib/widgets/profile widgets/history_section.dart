@@ -512,6 +512,7 @@ class _HistorySectionState extends State<HistorySection> {
           ),
           const SizedBox(height: 4),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.access_time,
@@ -533,6 +534,7 @@ class _HistorySectionState extends State<HistorySection> {
           ),
           const SizedBox(height: 4),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(
                 Icons.location_on,
