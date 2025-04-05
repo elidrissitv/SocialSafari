@@ -20,58 +20,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            color: Colors.white,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Navigation Tabs
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color(0xFFE5E7EB),
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(child: _buildTab('Mon Profil', 0)),
+                    Expanded(child: _buildTab('Historique', 1)),
+                    Expanded(child: _buildTab('Recommandation', 2)),
+                  ],
+                ),
+              ),
+            ),
+
+            // Content based on selected tab
+            Expanded(
+              child: _selectedTab == 0
+                  ? SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: [
-                            Expanded(child: _buildTab('Mon Profil', 0)),
-                            Expanded(child: _buildTab('Historique', 1)),
-                            Expanded(child: _buildTab('Recommandation', 2)),
+                            ProfileHeader(),
+                            SizedBox(height: 20),
+                            PersonalInfoForm(),
+                            SizedBox(height: 16),
+                            SettingsSection(),
+                            SizedBox(height: 16),
+                            AccountOptions(),
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
-
-                      // Content based on selected tab
-                      if (_selectedTab == 0) ...[
-                        ProfileHeader(),
-                        SizedBox(height: 20),
-                        PersonalInfoForm(),
-                        SizedBox(height: 16),
-                        SettingsSection(),
-                        SizedBox(height: 16),
-                        AccountOptions(),
-                      ] else if (_selectedTab == 1) ...[
-                        HistorySection(),
-                      ] else ...[
-                        RecommendationsSection(),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
+                    )
+                  : _selectedTab == 1
+                      ? HistorySection()
+                      : RecommendationsSection(),
             ),
-          ),
+          ],
         ),
       ),
     );

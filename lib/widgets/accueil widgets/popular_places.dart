@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PopularPlaces extends StatelessWidget {
   const PopularPlaces({super.key});
+
+  String _optimizedImageUrl(String url) {
+    if (url.contains('unsplash.com') || url.contains('builder.io')) {
+      return '$url?auto=compress&w=400&q=80';
+    }
+    return url;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +41,7 @@ class PopularPlaces extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           SizedBox(
-            height: 120, // Increased height slightly
+            height: 120,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: places.length,
@@ -45,11 +54,43 @@ class PopularPlaces extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          place['image']!,
+                        child: CachedNetworkImage(
+                          imageUrl: _optimizedImageUrl(place['image']!),
                           width: 135,
                           height: 120,
                           fit: BoxFit.cover,
+                          memCacheHeight: 240,
+                          fadeInDuration: const Duration(milliseconds: 300),
+                          fadeOutDuration: const Duration(milliseconds: 300),
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            period: const Duration(milliseconds: 1000),
+                            child: Container(
+                              width: 135,
+                              height: 120,
+                              color: Colors.white,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: 135,
+                            height: 120,
+                            color: Colors.grey[200],
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.error_outline,
+                                    color: Colors.grey[400], size: 30),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Image non\ndisponible',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.grey[600], fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       Positioned(
@@ -71,7 +112,7 @@ class PopularPlaces extends StatelessWidget {
                               Text(
                                 place['title']!,
                                 style: const TextStyle(
-                                  fontSize: 10, // Increased font size
+                                  fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -79,14 +120,14 @@ class PopularPlaces extends StatelessWidget {
                               Text(
                                 place['location']!,
                                 style: const TextStyle(
-                                  fontSize: 8, // Increased font size
+                                  fontSize: 8,
                                   color: Colors.white,
                                 ),
                               ),
                               Text(
                                 place['description']!,
                                 style: const TextStyle(
-                                  fontSize: 10, // Increased font size
+                                  fontSize: 10,
                                   color: Colors.white,
                                 ),
                               ),
@@ -136,19 +177,22 @@ class BellIconPainter extends CustomPainter {
 
 final List<Map<String, String>> places = [
   {
-    'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/9b579a8c72b3e2a3fc25c6b909d91c275bf7834b',
+    'image':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/9b579a8c72b3e2a3fc25c6b909d91c275bf7834b',
     'title': 'Paris Getaway',
     'location': 'Paris, France',
     'description': 'Réduction spéciale disponible',
   },
   {
-    'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/cb8ae7761808864d7245344b6a9b3fbdbcb65b9b',
+    'image':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/cb8ae7761808864d7245344b6a9b3fbdbcb65b9b',
     'title': 'Santorini',
     'location': 'Santorini, Greece',
     'description': 'Réduction spéciale disponible',
   },
   {
-    'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/b2de6981bd471ae4d15fcb9cd4583485c28555b2',
+    'image':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/b2de6981bd471ae4d15fcb9cd4583485c28555b2',
     'title': 'Tokyo',
     'location': 'Japon',
     'description': 'Découvrir Tokyo en nuit',

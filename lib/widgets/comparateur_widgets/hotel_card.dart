@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../utils/app_colors.dart';
 
 class HotelCard extends StatelessWidget {
@@ -23,6 +25,13 @@ class HotelCard extends StatelessWidget {
     this.isFavorite = false,
   }) : super(key: key);
 
+  String get _optimizedImageUrl {
+    if (imageUrl.contains('unsplash.com') || imageUrl.contains('builder.io')) {
+      return '$imageUrl?auto=compress&w=400&q=80';
+    }
+    return imageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,11 +54,42 @@ class HotelCard extends StatelessWidget {
             ClipRRect(
               borderRadius:
                   const BorderRadius.horizontal(left: Radius.circular(8)),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: _optimizedImageUrl,
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,
+                memCacheHeight: 240,
+                fadeInDuration: const Duration(milliseconds: 300),
+                fadeOutDuration: const Duration(milliseconds: 300),
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  period: const Duration(milliseconds: 1000),
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    color: Colors.white,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  width: 120,
+                  height: 120,
+                  color: Colors.grey[200],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline,
+                          color: Colors.grey[400], size: 30),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Image non\ndisponible',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             Expanded(

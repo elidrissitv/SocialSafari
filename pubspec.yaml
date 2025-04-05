@@ -11,6 +11,12 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  page_transition: ^2.1.0
+  flutter_staggered_animations: ^1.1.1
+  flutter_cache_manager: ^3.3.1
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

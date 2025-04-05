@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../widgets/decouverte widgets/custom_search_bar.dart';
@@ -14,18 +17,56 @@ class DiscoveryScreen extends StatefulWidget {
   State<DiscoveryScreen> createState() => _DiscoveryScreenState();
 }
 
-class _DiscoveryScreenState extends State<DiscoveryScreen> {
+class _DiscoveryScreenState extends State<DiscoveryScreen>
+    with AutomaticKeepAliveClientMixin {
   String selectedCategory = "Plages"; // This will hold the selected category
+  bool isLoading = true;
+  bool _didInit = false;
+
+  // List of image URLs to pre-cache
+  final List<String> _imageUrls = [
+    'https://images.unsplash.com/photo-1520454974749-611b7248ffdb?auto=compress&w=400&q=80',
+    'https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=compress&w=400&q=80',
+    'https://images.unsplash.com/photo-1549144511-f099e773c147?auto=compress&w=400&q=80',
+    'https://images.unsplash.com/photo-1431274172761-fca41d930114?auto=compress&w=400&q=80',
+    'https://images.unsplash.com/photo-1595846519845-68e298c2edd8?auto=compress&w=400&q=80',
+  ];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    debugPrint('DiscoveryScreen initialisé');
+    _loadContent();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _didInit = true;
+      // Pre-cache images
+      for (String url in _imageUrls) {
+        precacheImage(CachedNetworkImageProvider(url), context);
+      }
+    }
+  }
+
+  Future<void> _loadContent() async {
+    if (!mounted) return;
+    setState(() => isLoading = true);
+
+    // Simulate network delay (reduced to 200ms)
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (!mounted) return;
+    setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('DiscoveryScreen build appelé');
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -33,28 +74,69 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
           children: [
             header(),
             Expanded(
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      CustomSearchBar(),
-                      SizedBox(height: 20),
-                      _buildFiltersSection(),
-                      SizedBox(height: 30),
-                      _buildCategoriesSection(),
-                      SizedBox(height: 30),
-                      // Show different content based on selected category
-                      _buildCategoryContent(selectedCategory),
-                    ],
-                  ),
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        const SizedBox(height: 10),
+                        const CustomSearchBar(),
+                        const SizedBox(height: 20),
+                        _buildFiltersSection(),
+                        const SizedBox(height: 30),
+                        _buildCategoriesSection(),
+                        const SizedBox(height: 30),
+                        if (isLoading)
+                          _buildLoadingShimmer()
+                        else
+                          _buildCategoryContent(selectedCategory),
+                      ]),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer() {
+    return Column(
+      children: List.generate(
+        2,
+        (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildShimmerCard(),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildShimmerCard(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        height: 250,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
     );

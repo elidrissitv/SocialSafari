@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});
+
+  String _optimizedImageUrl(String url) {
+    if (url.contains('unsplash.com') || url.contains('builder.io')) {
+      return '$url?auto=compress&w=100&q=80';
+    }
+    return url;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +21,12 @@ class CategoryList extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: categories.map((category) => CategoryItem(
-            icon: category['icon']!,
-            name: category['name']!,
-          )).toList(),
+          children: categories
+              .map((category) => CategoryItem(
+                    icon: category['icon']!,
+                    name: category['name']!,
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -32,6 +43,13 @@ class CategoryItem extends StatelessWidget {
     required this.name,
   });
 
+  String get _optimizedImageUrl {
+    if (icon.contains('unsplash.com') || icon.contains('builder.io')) {
+      return '$icon?auto=compress&w=100&q=80';
+    }
+    return icon;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,10 +65,28 @@ class CategoryItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(32),
             ),
             child: Center(
-              child: Image.network(
-                icon,
+              child: CachedNetworkImage(
+                imageUrl: _optimizedImageUrl,
                 width: 20,
                 height: 20,
+                memCacheWidth: 40,
+                fadeInDuration: const Duration(milliseconds: 300),
+                fadeOutDuration: const Duration(milliseconds: 300),
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  period: const Duration(milliseconds: 1000),
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Icon(
+                  Icons.error_outline,
+                  size: 20,
+                  color: Colors.grey[400],
+                ),
               ),
             ),
           ),
@@ -71,31 +107,33 @@ class CategoryItem extends StatelessWidget {
 
 final List<Map<String, String>> categories = [
   {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/23db90245c2f1f73ed7cafc8d53d0ae3271cc2e6',
-    'name': 'Loisirs',
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/9b579a8c72b3e2a3fc25c6b909d91c275bf7834b',
+    'name': 'Plages',
   },
   {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/adad16b1eb56921cc9a4b43741366732f148cff0',
-    'name': 'Aventure',
-  },
-  {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/fcc582ca8c7ad2f6e298e877ced7bba7de03660b',
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/cb8ae7761808864d7245344b6a9b3fbdbcb65b9b',
     'name': 'Culture',
   },
   {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/9446f32ba89b3d3ff07a4c542a93ea883012bbcc',
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/b2de6981bd471ae4d15fcb9cd4583485c28555b2',
+    'name': 'Aventure',
+  },
+  {
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/9b579a8c72b3e2a3fc25c6b909d91c275bf7834b',
+    'name': 'Gastronomie',
+  },
+  {
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/cb8ae7761808864d7245344b6a9b3fbdbcb65b9b',
     'name': 'Luxe',
   },
   {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/1ff0433dfbc006240e916b2c9e6b7534af481380',
-    'name': 'Bien-être',
-  },
-  {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/83f18567976f9317e3f3cadeed2f978814fa6ff8',
-    'name': 'En famille',
-  },
-  {
-    'icon': 'https://cdn.builder.io/api/v1/image/assets/TEMP/d4cc8560d7b947f312b2c6015ec756255e183291',
-    'name': 'Romantiques',
+    'icon':
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/b2de6981bd471ae4d15fcb9cd4583485c28555b2',
+    'name': 'Romance',
   },
 ];
