@@ -138,7 +138,7 @@ Nous souhaitons offrir une **expérience de voyage plus humaine, fiable et inspi
 | Sprint 1 | Définition des besoins, Personas, Backlog | ✅ Terminé |
 | Sprint 2 | User Flow, Task Flow, Sitemap | ✅ Terminé |
 | Sprint 3 | Preuve sociale, affichage des avis, interactions communautaires | 🔄 En cours |
-| Sprint 4 | Tests utilisateurs, ajustements UX/UI, accessibilité | ⏳ À venir |
+| Sprint 4 | Tests utilisateurs, ajustements UX/UI, accessibilité | 🔄 En cours |
 
 ---
 
