@@ -1,125 +1,116 @@
 import 'package:flutter/material.dart';
+import '../../pages/offer_details_page.dart';
 
-class SpecialOffers extends StatelessWidget {
-  const SpecialOffers({super.key});
+class SpecialOffers extends StatefulWidget {
+  final bool showAllOffers;
+  final VoidCallback onToggleShowAll;
+
+  const SpecialOffers({
+    super.key,
+    required this.showAllOffers,
+    required this.onToggleShowAll,
+  });
 
   @override
+  State<SpecialOffers> createState() => _SpecialOffersState();
+}
+
+class _SpecialOffersState extends State<SpecialOffers> {
+  @override
   Widget build(BuildContext context) {
+    List<Map<String, String>> displayedOffers = widget.showAllOffers
+        ? offers
+        : offers.take(2).toList();
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Header Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Offres spéciales',
+                'Promotions exclusives',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF11181C),
                 ),
               ),
-              SizedBox(
-                width: 14,
-                height: 15,
-                child: CustomPaint(
-                  painter: BellIconPainter(),
-                ),
-              ),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 16),
+          Column(
+            children: List.generate(
+              (displayedOffers.length / 2).ceil(),
+                  (rowIndex) {
+                final startIndex = rowIndex * 2;
+                final endIndex = (startIndex + 2).clamp(0, displayedOffers.length);
+                final rowOffers = displayedOffers.sublist(startIndex, endIndex);
 
-          // Offers List Section
-          SizedBox(
-            height: 220, // Increased height for better alignment
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: offers.length,
-              itemBuilder: (context, index) {
-                final offer = offers[index];
-                return InkWell(
-                  onTap: () {
-                    // Handle tap action here
-                    // For example, navigate to a details page:
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OfferDetailsPage(offer: offer),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildOfferCard(rowOffers[0], context),
                       ),
-                    );
-                  },
-                  child: OfferCard(offer: offer),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: rowOffers.length > 1
+                            ? _buildOfferCard(rowOffers[1], context)
+                            : const SizedBox(),
+                      ),
+                    ],
+                  ),
                 );
               },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: TextButton(
+              onPressed: widget.onToggleShowAll,
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF6D56FF),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                widget.showAllOffers ? 'Voir moins' : 'Voir plus',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
-}
-class OfferDetailsPage extends StatelessWidget {
-  final Map<String, String> offer;
 
-  const OfferDetailsPage({super.key, required this.offer});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(offer['title']!),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                offer['image']!,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                offer['title']!,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Prix: ${offer['price']}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Durée: ${offer['duration']}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Note: ${offer['rating']} ★',
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
+  Widget _buildOfferCard(Map<String, String> offer, BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OfferDetailsPage(offer: offer),
           ),
-        ),
-      ),
+        );
+      },
+      child: OfferCard(offer: offer),
     );
   }
 }
-// Extracted Offer Card Widget for Reusability
+
 class OfferCard extends StatelessWidget {
   final Map<String, String> offer;
 
@@ -128,34 +119,31 @@ class OfferCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 180,
-      margin: const EdgeInsets.only(right: 15),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image Section with Overlay
           Stack(
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
                 ),
                 child: Image.network(
                   offer['image']!,
-                  width: 180,
-                  height: 100, // Reduced height to prevent overflow
+                  width: double.infinity,
+                  height: 120,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -163,71 +151,56 @@ class OfferCard extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green[500],
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: const Text(
-                    'Vérifié',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 5,
-                right: 5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: const Color(0xFF4CAF50),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    '${offer['rating']} ★',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.black87,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        offer['rating']!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      const Icon(
+                        Icons.star,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-
-          // Details Section
           Padding(
-            padding: const EdgeInsets.all(8), // Reduced padding slightly
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   offer['title']!,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
+                    color: Colors.black87,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  offer['originalPrice']!,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
                 Row(
                   children: [
                     Text(
                       offer['price']!,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF6D56FF),
                       ),
@@ -235,18 +208,11 @@ class OfferCard extends StatelessWidget {
                     const Text(
                       ' par nuit',
                       style: TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF6D56FF),
+                        fontSize: 12,
+                        color: Colors.grey,
                       ),
                     ),
                   ],
-                ),
-                Text(
-                  offer['duration']!,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
-                  ),
                 ),
               ],
             ),
@@ -256,7 +222,7 @@ class OfferCard extends StatelessWidget {
     );
   }
 }
-// Custom Painter for Bell Icon
+
 class BellIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -276,6 +242,7 @@ class BellIconPainter extends CustomPainter {
     path.cubicTo(2, 9.62244, 3.755, 10.1877, 6.5, 10.1877);
     path.cubicTo(9.245, 10.1877, 11, 9.62244, 11, 8.88321);
     path.cubicTo(11, 8.05702, 9.65, 7.70915, 9.65, 6.27418);
+
     canvas.drawPath(path, paint);
   }
 
@@ -285,22 +252,65 @@ class BellIconPainter extends CustomPainter {
   }
 }
 
-// Sample Data
 final List<Map<String, String>> offers = [
   {
-    'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/4184f41b46177ac1923d391c7cc95994a39bc0f6',
+    'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/31c4d503958af5970b906f1211d9417ad979af09',
     'title': 'L\'étoile des Cévennes, France',
     'originalPrice': '2500MAD',
-    'price': '2000MAD ',
+    'price': '2000MAD',
     'duration': '6 jours',
-    'rating': '4.8',
+    'rating': '4.8 (1,423 avis)',
+    'location': 'Cévennes, France',
+    'hours': '9:00 - 18:00 (Dernière admission: 17:00)',
   },
   {
     'image': 'https://cdn.builder.io/api/v1/image/assets/TEMP/232b88eba8a0efbd6f060b1ed4304a5e516ca0ae',
     'title': 'Évasion insolite à Marrakech à prix DINGUE, Maroc',
     'originalPrice': '2000MAD',
-    'price': '1850MAD ',
+    'price': '1850MAD',
     'duration': '4 jours',
-    'rating': '5',
+    'rating': '5.0 (2,105 avis)',
+    'location': 'Marrakech, Maroc',
+    'hours': '10:00 - 20:00 (Dernière admission: 19:00)',
+  },
+  {
+    'image': 'https://th.bing.com/th/id/R.8a9b81f2855a03e1d7ba38158d4e8d28?rik=T2Qs%2bwXHE8hb4A&pid=ImgRaw&r=0',
+    'title': 'Séjour luxueux aux Maldives',
+    'originalPrice': '8000MAD',
+    'price': '6500MAD',
+    'duration': '7 jours',
+    'rating': '4.9 (3,487 avis)',
+    'location': 'Malé, Maldives',
+    'hours': '24h/24, 7j/7',
+  },
+  {
+    'image': 'https://www.voyageavecnous.fr/wp-content/uploads/2022/10/apercu-activites-dubai.jpg',
+    'title': 'Vacances de rêve à Dubaï',
+    'originalPrice': '7000MAD',
+    'price': '5500MAD',
+    'duration': '5 jours',
+    'rating': '4.8 (2,936 avis)',
+    'location': 'Dubaï, Emirats Arabes Unis',
+    'hours': '9:00 - 22:00',
+  },
+  {
+    'image': 'https://www.travelive.com/public/img/travel2greece/vacation/athens-santorini/luxury-suite-with-private-pool-in-santorini.jpg',
+    'title': 'Romance à Santorini, Grèce',
+    'originalPrice': '4500MAD',
+    'price': '3800MAD',
+    'duration': '6 jours',
+    'rating': '4.7 (1,876 avis)',
+    'location': 'Santorini, Grèce',
+    'hours': '8:00 - 19:00',
+  },
+  {
+    'image': 'https://eluxtravel.com/media/cache/1920x850/uploads/img/mediablock_images/62badf986ecad_08.jpg',
+    'title': 'Aventure luxueuse au Costa Rica',
+    'originalPrice': '5000MAD',
+    'price': '4200MAD',
+    'duration': '8 jours',
+    'rating': '4.6 (1,543 avis)',
+    'location': 'San José, Costa Rica',
+    'hours': '7:00 - 18:00',
   },
 ];

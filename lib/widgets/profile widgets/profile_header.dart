@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({Key? key}) : super(key: key);
+
+  String get _optimizedImageUrl {
+    const url =
+        'https://cdn.builder.io/api/v1/image/assets/TEMP/216133e8eea83f5382dba7c712a5a691d784f9b3';
+    return '$url?auto=compress&w=150&q=80';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +26,31 @@ class ProfileHeader extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(40),
-                child: Image.network(
-                  'https://cdn.builder.io/api/v1/image/assets/TEMP/216133e8eea83f5382dba7c712a5a691d784f9b3',
+                child: CachedNetworkImage(
+                  imageUrl: _optimizedImageUrl,
                   width: 73,
                   height: 73,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Icon(
-                        Icons.person,
-                        size: 40,
-                        color: Color(0xFF6D56FF),
-                      ),
-                    );
-                  },
+                  memCacheHeight: 146,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  fadeOutDuration: const Duration(milliseconds: 300),
+                  placeholder: (context, url) => Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    period: const Duration(milliseconds: 1000),
+                    child: Container(
+                      width: 73,
+                      height: 73,
+                      color: Colors.white,
+                    ),
+                  ),
+                  errorWidget: (context, error, stackTrace) => const Center(
+                    child: Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Color(0xFF6D56FF),
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -13,9 +13,16 @@ class BottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+        border: const Border(
           top: BorderSide(
             color: Color(0xFFF1F1F1),
             width: 1,
@@ -25,10 +32,10 @@ class BottomNavigation extends StatelessWidget {
       child: BottomNavigationBar(
         items: [
           _buildNavItem(Icons.home_outlined, 'Accueil'),
-          _buildNavItem(Icons.explore_outlined, 'Découverte'),
+          _buildNavItem(Icons.explore_outlined, 'Decouverte'),
           _buildNavItem(Icons.calendar_today_outlined, 'Réservation'),
           _buildNavItem(Icons.compare_arrows_outlined, 'Comparateur'),
-          _buildNavItem(Icons.group_outlined, 'Communauté'),
+          _buildNavItem(Icons.group_outlined, 'Communaute'),
           _buildNavItem(Icons.person_outline, 'Profil'),
         ],
         currentIndex: currentIndex,
@@ -37,12 +44,11 @@ class BottomNavigation extends StatelessWidget {
         unselectedItemColor: const Color(0xFFA09CAB),
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        iconSize: 20,
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
+        iconSize: 24,
         backgroundColor: Colors.white,
-        selectedLabelStyle: const TextStyle(height: 1.4),
-        unselectedLabelStyle: const TextStyle(height: 1.4),
+        elevation: 0,
       ),
     );
   }

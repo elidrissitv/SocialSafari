@@ -3,7 +3,12 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 
 class CustomSearchBar extends StatelessWidget {
-  const CustomSearchBar({Key? key}) : super(key: key);
+  final Function(String) onSearchChanged;
+
+  const CustomSearchBar({
+    super.key,
+    required this.onSearchChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +24,7 @@ class CustomSearchBar extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              onChanged: onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Rechercher des lieux...',
                 hintStyle: AppTextStyles.searchHint,

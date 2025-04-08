@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../pages/discovery_screen.dart';
+
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});
 
@@ -34,36 +36,47 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16), // Adjust spacing between items
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(99, 74, 255, 0.10),
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: Center(
-              child: Image.network(
-                icon,
-                width: 20,
-                height: 20,
+    return GestureDetector(
+      onTap: () {
+        debugPrint('Navigating to discovery screen with category: $name');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DiscoveryScreen(initialCategory: name),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(99, 74, 255, 0.10),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: Center(
+                child: Image.network(
+                  icon,
+                  width: 20,
+                  height: 20,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8), // Space between icon and text
-          Text(
-            name,
-            style: const TextStyle(
-              fontSize: 12, // Increased font size for readability
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1C1B1F),
+            const SizedBox(height: 8),
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1C1B1F),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

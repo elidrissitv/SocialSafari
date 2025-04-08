@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import '../common/image_with_placeholder.dart';
 
-class RecommendationsSection extends StatelessWidget {
+class RecommendationsSection extends StatefulWidget {
   const RecommendationsSection({Key? key}) : super(key: key);
+
+  @override
+  _RecommendationsSectionState createState() => _RecommendationsSectionState();
+}
+
+class _RecommendationsSectionState extends State<RecommendationsSection> {
+  String selectedFilter = 'Tous';
 
   @override
   Widget build(BuildContext context) {
@@ -10,11 +18,10 @@ class RecommendationsSection extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Image.network(
-                'https://cdn.builder.io/api/v1/image/assets/TEMP/cf4e3caa3a34243c809bd58cc7cf06e12c5007a2',
+              ImageWithPlaceholder(
+                imageUrl: 'https://www.olevoyages.ma/olevoyage/public/images/1653176728931793436355607_w-1200_h-630_q-70_m-crop.jpg',
                 width: double.infinity,
                 height: 200,
-                fit: BoxFit.cover,
               ),
               Positioned(
                 bottom: 0,
@@ -45,7 +52,7 @@ class RecommendationsSection extends StatelessWidget {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          'Populaire',
+                          'Destination Tendance',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -54,7 +61,7 @@ class RecommendationsSection extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Loft Design Paris - 2500Mad/nuit',
+                        'Séjour aux Maldives - À partir de 15000 Mad/pers',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -73,57 +80,30 @@ class RecommendationsSection extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip('Tous', true),
+                  _buildFilterChip('Tous', selectedFilter == 'Tous'),
                   SizedBox(width: 12),
-                  _buildFilterChip('Restaurants', false),
+                  _buildFilterChip('Plages', selectedFilter == 'Plages'),
                   SizedBox(width: 12),
-                  _buildFilterChip('Hôtels', false),
+                  _buildFilterChip('Montagnes', selectedFilter == 'Montagnes'),
                   SizedBox(width: 12),
-                  _buildFilterChip('Bars', false),
+                  _buildFilterChip('Villes', selectedFilter == 'Villes'),
+                  SizedBox(width: 12),
+                  _buildFilterChip('Culture', selectedFilter == 'Culture'),
                 ],
               ),
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 24),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 15),
             child: GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.7,
-              children: [
-                _buildRecommendationCard(
-                  image:
-                      'https://cdn.builder.io/api/v1/image/assets/TEMP/a5b9da510ac230a8034f2a57f5ac776e3c300ecc',
-                  title: 'Le Petit Bistrot - 450Mad/pers',
-                  subtitle: 'Restaurant traditionnel',
-                  relevance: '98% pertinent',
-                ),
-                _buildRecommendationCard(
-                  image:
-                      'https://cdn.builder.io/api/v1/image/assets/TEMP/9781ace062553aa13ab48b15bae5d37b5daaf445',
-                  title: 'Hôtel du Palais - 3800Mad/nuit',
-                  subtitle: '5 étoiles - Vue mer',
-                  relevance: '95% pertinent',
-                ),
-                _buildRecommendationCard(
-                  image:
-                      'https://cdn.builder.io/api/v1/image/assets/TEMP/fb8ff07e29ecd8fbcaa4ccf1f1ffb27e0a03c275',
-                  title: 'Le Bar Secret - 150Mad/cocktail',
-                  subtitle: 'Cocktails & Ambiance',
-                  relevance: '92% pertinent',
-                ),
-                _buildRecommendationCard(
-                  image:
-                      'https://cdn.builder.io/api/v1/image/assets/TEMP/30bc30a9342538a35e35f8c5920f022a849b58e6',
-                  title: 'Parc Aventure - 350Mad/pers',
-                  subtitle: 'Activités en plein air',
-                  relevance: '90% pertinent',
-                ),
-              ],
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 0.65,
+              children: _getFilteredRecommendations(),
             ),
           ),
           SizedBox(height: 16),
@@ -132,25 +112,85 @@ class RecommendationsSection extends StatelessWidget {
     );
   }
 
+  List<Widget> _getFilteredRecommendations() {
+    final recommendations = [
+      {
+        'image': 'https://static1.evcdn.net/cdn-cgi/image/width=3840,height=3072,quality=70,fit=crop/offer/raw/2025/01/29/bce94ce4-1477-49db-a850-b6b0cc73a076.jpg',
+        'title': 'Bali, Indonésie - 12000 Mad',
+        'subtitle': 'Séjour plage et culture',
+        'type': 'Plages',
+      },
+      {
+        'image': 'https://www.interhome.fr/upload/travelguide/7081/responsive-images/ski-en-suisse-meilleurs-domaines-zermatt___responsive-content_1000_667.jpg',
+        'title': 'Alpes Suisses - 9800 Mad',
+        'subtitle': 'Ski et sports d\'hiver',
+        'type': 'Montagnes',
+      },
+      {
+        'image': 'https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/0c/0a/31/a2.jpg',
+        'title': 'Marrakech - 4500 Mad',
+        'subtitle': 'Circuit culturel et gastronomique',
+        'type': 'Culture',
+      },
+      {
+        'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR24BRvzgNbj8D0lwnDtAslXDfwd9fxhXXcyQ&s',
+        'title': 'Santorini, Grèce - 8900 Mad',
+        'subtitle': 'Séjour romantique',
+        'type': 'Villes',
+      },
+      {
+        'image': 'https://www.destinationtunisie.info/wp-content/uploads/2023/02/hotels-djerba-plage-adresse-contact-reservation.jpg',
+        'title': 'Djerba, Tunisie - 3800 Mad',
+        'subtitle': 'Île paisible avec plages et artisanat local',
+        'type': 'Plages',
+      },
+      {
+        'image': 'https://images5.bovpg.net/fw/back/uk/media/1/2/6/5/4/265470.jpg',
+        'title': 'Charm el-Cheikh, Égypte - 5100 Mad',
+        'subtitle': 'Plongée sous-marine et resorts de luxe',
+        'type': 'Plages',
+      },
+    ];
+
+    return recommendations.where((rec) {
+      if (selectedFilter == 'Tous') return true;
+      return rec['type'] == selectedFilter;
+    }).map((rec) {
+      return _buildRecommendationCard(
+        image: rec['image'] ?? '',
+        title: rec['title'] ?? 'Titre indisponible',
+        subtitle: rec['subtitle'] ?? 'Sous-titre indisponible',
+        relevance: '98% pertinent',
+      );
+    }).toList();
+  }
+
   Widget _buildFilterChip(String label, bool isSelected) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 12,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: isSelected ? Color(0xFF6D56FF) : Color(0xFFE5E7EB),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedFilter = label;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
         ),
-        borderRadius: BorderRadius.circular(8),
-        color: isSelected ? Color(0xFF6D56FF) : Colors.white,
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 14,
-          color: isSelected ? Colors.white : Colors.black,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? Color(0xFF6D56FF) : Color(0xFFE5E7EB),
+          ),
+          borderRadius: BorderRadius.circular(8),
+          color: isSelected ? Color(0xFF6D56FF) : Colors.white,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
         ),
       ),
     );
@@ -181,52 +221,57 @@ class RecommendationsSection extends StatelessWidget {
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(8),
             ),
-            child: Image.network(
-              image,
-              height: 120,
+            child: ImageWithPlaceholder(
+              imageUrl: image,
+              height: 100,
               width: double.infinity,
-              fit: BoxFit.cover,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF6D56FF).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    relevance,
-                    style: TextStyle(
-                      color: Color(0xFF6D56FF),
-                      fontSize: 12,
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEEF2FF),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      relevance,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Color(0xFF6D56FF),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                  SizedBox(height: 4),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 12,
+                  SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF6B7280),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
